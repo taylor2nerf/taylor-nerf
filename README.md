@@ -7,7 +7,7 @@ Neural Radiance Fields (NeRFs) have gained popularity by demonstrating impressiv
 Our code is based on [NerfAcc](https://github.com/nerfstudio-project/nerfacc).
 ### Clone this repository.
 ```python
-git clone --recursive git://github.com/nerfstudio-project/nerfacc/
+git clone --recursive https://github.com/taylor2nerf/taylor-nerf.git
 ```
 ### Install Environment via Anaconda (Recommended)
 ```python
