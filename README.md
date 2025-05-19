@@ -6,17 +6,17 @@ Neural Radiance Fields (NeRFs) have gained popularity by demonstrating impressiv
 ## ⚙️ Setup
 Our code is based on [NerfAcc](https://github.com/nerfstudio-project/nerfacc).
 ### Clone this repository.
-```python
+```text
 git clone --recursive https://github.com/taylor2nerf/taylor-nerf.git
 ```
 ### Install Environment via Anaconda (Recommended)
-```python
+```text
 conda create -n nerfacc python=3.10
 conda activate nerfacc
 pip install -r requirements.txt
 ```
 ### Compilation tiny-cuda-nn
-```python
+```text
 pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
 ```
 | Windows & Linux | cu113 | cu115 | cu116 | cu117 | cu118 |
