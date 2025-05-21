@@ -34,7 +34,7 @@ pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/to
 
 
 ### 📦 Dataset
-We mainly test our method on NeRF Synthetic, and MipNeRF-360 v2 dataset. Put them under the data folder:
+We mainly test our method on Synthetic Blender, and Mip-360 v2 dataset. Put them under the data folder:
 ```text
 data
 └── nerf_synthetic
