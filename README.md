@@ -63,25 +63,25 @@ def query_density(self, x: torch.Tensor, t_dirs: torch.Tensor=None, return_feat:
 +                x, [1, self.geo_feat_dim, self.density_grad_dim, self.density_hessian_dim, self.latent_grad_dim, self.latent_hessian_dim], dim=-1)
                         
 +        if  t_dirs is not None:
-+            t_dirs_t = t_dirs[..., None,:]
-+            t_dirs_t = (t_dirs_t.permute(0, 2, 1) @ t_dirs_t).reshape(-1, 1, 9)
-
-+            base_mlp_out_grad = base_mlp_out_grad.reshape(-1, self.geo_feat_dim, 3)
-+            base_mlp_out_grad = (base_mlp_out_grad @ t_dirs[..., None]).reshape(-1, 1) 
-                    
-+            base_mlp_out_hessian = base_mlp_out_hessian.reshape(-1, self.geo_feat_dim, 9, 1)
-+            base_mlp_out_hessian = (t_dirs_t[:, None] @ base_mlp_out_hessian).reshape(-1, 15)
-                    
-+            density_grad = (density_grad[..., None,:] @ t_dirs[..., None]).reshape(-1, 1)  
-
-+            density_hessian = density_hessian.reshape(-1, 9, 1)
-+            density_hessian = (t_dirs_t @ density_hessian).reshape(-1, 1)
-             
-+            if self.training and return_feat: 
-+                self.density_grad_loss.append(F.mse_loss(density_grad, torch.zeros_like(density_grad)))
-+                self.density_hessian_loss.append(F.mse_loss(density_hessian, torch.zeros_like(density_hessian)))
-+                self.latent_grad_loss.append(F.mse_loss(base_mlp_out_grad, torch.zeros_like(base_mlp_out_grad)))
-+                self.latent_hessian_loss.append(F.mse_loss(base_mlp_out_hessian, torch.zeros_like(base_mlp_out_hessian)))
++            t_dirs_3d = t_dirs.unsqueeze(-1)  # [..., 3, 1]
++            t_dirs_9d = (t_dirs_3d @ t_dirs_3d.transpose(-2, -1)).flatten(start_dim=-2)  # [..., 9]
+            
++            density_grad = torch.einsum('...i,...i->...', density_grad, t_dirs).unsqueeze(-1)
++            density_hessian = torch.einsum('...i,...i->...', 
++                                          density_hessian.view(-1, 9), 
++                                          t_dirs_9d).unsqueeze(-1)
++            base_mlp_out_grad = torch.einsum('...ij,...j->...i',
++                                            base_mlp_out_grad.view(-1, self.geo_feat_dim, 3),
++                                            t_dirs)
++            base_mlp_out_hessian = torch.einsum('...ij,...j->...i',
++                                               base_mlp_out_hessian.view(-1, self.geo_feat_dim, 9),
++                                               t_dirs_9d)
++            if self.training and return_feat:
++                zeros = torch.zeros_like(density_grad)
++                self._density_grad_loss.append(F.mse_loss(density_grad, zeros))
++                self._density_hessian_loss.append(F.mse_loss(density_hessian, zeros))
++                self._latent_grad_loss.append(F.mse_loss(base_mlp_out_grad, zeros.expand_as(base_mlp_out_grad)))
++                self._latent_hessian_loss.append(F.mse_loss(base_mlp_out_hessian, zeros.expand_as(base_mlp_out_hessian)))
 
 +            base_mlp_out = base_mlp_out + base_mlp_out_grad + base_mlp_out_hessian
 +            density_before_activation = density_before_activation + density_grad + density_hessian 
