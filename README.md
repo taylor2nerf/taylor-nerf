@@ -13,7 +13,7 @@ Neural Radiance Fields (NeRFs) have gained popularity by demonstrating impressiv
 ```diff
 ### Network Define
 def __init__(...):
-    self.mlp_base = tcnn.NetworkWithInputEncoding(
+    self.geo_mlp = tcnn.NetworkWithInputEncoding(
         n_input_dims = num_dim,
 - 	    n_output_dims= 1 + self.geo_feat_dim,
 +       n_output_dims= 1 + self.geo_feat_dim + self.density_grad_dim + self.density_hessian_dim + self.latent_grad_dim + self.latent_hessian_dim,
@@ -49,7 +49,7 @@ def query_density(self, x: torch.Tensor, t_dirs: torch.Tensor=None, return_feat:
 -      	)
  
 +       x = (
-+              self.mlp_base(x.reshape(-1, 3))
++              self.geo_mlp(x.reshape(-1, 3))
 +                .view(list(x.shape[:-1]) + [1 + self.geo_feat_dim + self.density_grad_dim + self.density_hessian_dim + self.latent_grad_dim + self.latent_hessian_dim])
 +                .to(x)
 +            )
