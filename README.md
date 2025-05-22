@@ -41,7 +41,7 @@ def query_density(self, x: torch.Tensor, t_dirs: torch.Tensor=None, return_feat:
             aabb_min, aabb_max = torch.split(self.aabb, self.num_dim, dim=-1)
             x = (x - aabb_min) / (aabb_max - aabb_min)
         selector = ((x > 0.0) & (x < 1.0)).all(dim=-1)
- 
+
 -       x = (
 -          self.mlp_base(x.view(-1, self.num_dim))
 -          .view(list(x.shape[:-1]) + [1 + self.geo_feat_dim])
@@ -67,12 +67,12 @@ def query_density(self, x: torch.Tensor, t_dirs: torch.Tensor=None, return_feat:
 +            t_dirs_t = (t_dirs_t.permute(0, 2, 1) @ t_dirs_t).reshape(-1, 1, 9)
 
 +            base_mlp_out_grad = base_mlp_out_grad.reshape(-1, self.geo_feat_dim, 3)
-+            base_mlp_out_grad = (base_mlp_out_grad @ t_dirs[..., None]).reshape(x.shape[0], -1) 
++            base_mlp_out_grad = (base_mlp_out_grad @ t_dirs[..., None]).reshape(-1, 1) 
                     
 +            base_mlp_out_hessian = base_mlp_out_hessian.reshape(-1, self.geo_feat_dim, 9, 1)
 +            base_mlp_out_hessian = (t_dirs_t[:, None] @ base_mlp_out_hessian).reshape(-1, 15)
                     
-+            density_grad = (density_grad[..., None,:] @ t_dirs[..., None]).reshape(x.shape[0], -1)  
++            density_grad = (density_grad[..., None,:] @ t_dirs[..., None]).reshape(-1, 1)  
 
 +            density_hessian = density_hessian.reshape(-1, 9, 1)
 +            density_hessian = (t_dirs_t @ density_hessian).reshape(-1, 1)
@@ -102,10 +102,8 @@ def train(...):
 
 ```  
 
-  
-
 ## ⚙️ Setup
-Our code is based on [Nerfacc](https://github.com/nerfstudio-project/nerfacc).
+Our example code is based on [Nerfacc](https://github.com/nerfstudio-project/nerfacc).
 ### Clone this repository.
 ```text
 git clone --recursive https://github.com/taylor2nerf/taylor-nerf.git
