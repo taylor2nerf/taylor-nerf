@@ -9,7 +9,7 @@ Neural Radiance Fields (NeRFs) have gained popularity by demonstrating impressiv
   <img src="assets/rip_materials_depth.gif" width="45%">
 </p>
 
-## Only a few lines of changes were needed in key sections of code to convert various NeRF backbone into ours, such as Nerfacc OccGrid：
+## Integrating our method with various NeRF backbones, such as NerfAcc, required only minimal modifications—limited to a few lines of code in key components：
 ```diff
 ### Network Define
 def __init__(**):
@@ -95,6 +95,11 @@ def query_density(self, x: torch.Tensor, t_dirs: torch.Tensor=None, return_feat:
             return density, base_mlp_out
         else:
             return density
+     
+def train(***):
+-    loss_rec = F.smooth_l1_loss(rgb, pixels)
++    loss = loss_rec + reg_loss ### density_grad_loss + density_hessian_loss + latent_grad_loss + latent_hessian_loss
+
 ```  
 
   
