@@ -11,9 +11,7 @@ Neural Radiance Fields (NeRFs) have gained popularity by demonstrating impressiv
 
 ## Only a few lines of changes were needed in key sections of code to convert various NeRF backbone into ours, such as Nerfacc OccGrid：
   
-  ```diff - denom = (cdf_g[...,1]-cdf_g[...,0]) - denom = torch.where(denom<1e-5, torch.ones_like(denom), denom) - t = (u-cdf_g[...,0])/denom + residual = u-cdf_g[...,0] + rhs = residual * torch.sum(integral, dim = -1, keepdim = True) + weights_g = torch.gather(weights.unsqueeze(1).expand(matched_shape), 2, inds_g) + denom = torch.log(weights_g[..., 1]/weights_g[..., 0]) + 1e-6 + t = torch.log1p(rhs*denom/weights_g[..., 0]) / denom 
-  
-  ``` 
+<pre lang="markdown"> ```diff - denom = (cdf_g[...,1]-cdf_g[...,0]) - denom = torch.where(denom<1e-5, torch.ones_like(denom), denom) - t = (u-cdf_g[...,0])/denom + residual = u-cdf_g[...,0] + rhs = residual * torch.sum(integral, dim = -1, keepdim = True) + weights_g = torch.gather(weights.unsqueeze(1).expand(matched_shape), 2, inds_g) + denom = torch.log(weights_g[..., 1]/weights_g[..., 0]) + 1e-6 + t = torch.log1p(rhs*denom/weights_g[..., 0]) / denom ``` </pre>
 
   -def query_density(self, x, return_feat: bool=False, t_dirs: torch.Tensor=None, t_dists: torch.Tensor=None):
         if self.unbounded:
