@@ -49,4 +49,5 @@ bash scripts/train_ns_all.sh
 ```
 
 ### Rebuttal Figure
+![Rebuttal](nips_rebuttal.png)
 
