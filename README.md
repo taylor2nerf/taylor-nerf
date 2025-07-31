@@ -48,6 +48,6 @@ We provide the script to test our code on each scene of NeRF Synthetic datasets.
 bash scripts/train_ns_all.sh
 ```
 
-### Rebuttal Figure
+### Rebuttal Figures
 ![Rebuttal](nips_rebuttal.png)
 
